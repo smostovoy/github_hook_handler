@@ -25,7 +25,7 @@ class GithubHook
             `cd #{project['deploy_to']}; git clone #{project['repo']} #{ref}; cd #{ref_deploy_path}; git checkout -b #{ref} origin/#{ref}`
         end
 
-        `#{project['run_after'].replace(/\$path/, ref_deploy_path)}` if project['run_after']
+        `#{project['run_after'].gsub(/\$path/, ref_deploy_path)}` if project['run_after']
     else
         throw "Cant find configuration for '#{project_id}' project"
     end
