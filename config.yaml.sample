@@ -1,0 +1,15 @@
+projects:
+
+    user/project1:
+    	# You can use http auth or ssh keys if you want
+        repo: "https://user:password@github.com/user/project1.git"
+        deploy_to: "/home/user/deploy/project1"        
+        # Trigger Jenkins build
+        run_after: "curl --user user:password http://localhost:8080/job/project1/build"
+
+    user/project2:
+    	# You can use http auth or ssh keys if you want
+        repo: "https://user:password@github.com/user/project2.git"
+        deploy_to: "/home/user/deploy/project2"
+        # Trigger Jenkins build
+        run_after: "curl --user user:password http://localhost:8080/job/project2/build"
