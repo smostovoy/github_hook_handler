@@ -20,7 +20,7 @@ class GithubHook
 
         if File.directory? ref_deploy_path
             print "Updating existing directory"
-            `cd #{ref_deploy_path}; git pull`
+            `cd #{ref_deploy_path}; git reset --hard; git pull`
         else
             `cd #{project['deploy_to']}; git clone #{project['repo']} #{ref}; cd #{ref_deploy_path}; git checkout -b #{ref} origin/#{ref}`
         end
