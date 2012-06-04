@@ -25,7 +25,12 @@ class GithubHook
             `cd #{project['deploy_to']}; git clone #{project['repo']} #{ref}; cd #{ref_deploy_path}; git checkout -b #{ref} origin/#{ref}`
         end
 
-        `#{project['run_after'].gsub(/\$path/, ref_deploy_path)}` if project['run_after']
+        if project['run_after']
+          project['run_after'].gsub(/\$path/, ref_deploy_path).split("\n").each do |command|
+            `#{command} > #{$config["log_file"]}`           
+          end
+        end  
+
     else
         throw "Cant find configuration for '#{project_id}' project"
     end

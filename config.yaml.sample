@@ -1,4 +1,5 @@
 projects:
+    log_file: /var/log/github_hook_handler.log
 
     user/project1:
     	# You can use http auth or ssh keys if you want
