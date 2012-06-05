@@ -1,16 +1,17 @@
 require 'json'
 require 'yaml'
+require 'logger'
 
 $config = YAML.load_file("config.yaml")
 
 class GithubHook
   def call(env)
-    req = Rack::Request.new(env)    
-
+    req = Rack::Request.new(env)
+    logger = Logger.new($config["log_file"] || STDOUT)
     commit_info = JSON.parse req['payload']
     repo = commit_info['repository']
-    
-    project_id = "#{repo['owner']['name']}/#{repo['name']}" 
+
+    project_id = "#{repo['owner']['name']}/#{repo['name']}"
     project = $config["projects"][project_id]
 
     if project
@@ -19,17 +20,17 @@ class GithubHook
         ref_deploy_path = File.join project['deploy_to'], ref
 
         if File.directory? ref_deploy_path
-            print "Updating existing directory"
-            `cd #{ref_deploy_path}; git reset --hard; git pull`
+            logger.info "Updating existing directory"
+            logger.info `cd #{ref_deploy_path}; git reset --hard; git pull`
         else
-            `cd #{project['deploy_to']}; git clone #{project['repo']} #{ref}; cd #{ref_deploy_path}; git checkout -b #{ref} origin/#{ref}`
+            logger.info `cd #{project['deploy_to']}; git clone #{project['repo']} #{ref}; cd #{ref_deploy_path}; git checkout -b #{ref} origin/#{ref}`
         end
 
         if project['run_after']
           project['run_after'].gsub(/\$path/, ref_deploy_path).split("\n").each do |command|
-            `#{command} > #{$config["log_file"]}`           
+            logger.info `#{command}`
           end
-        end  
+        end
 
     else
         throw "Cant find configuration for '#{project_id}' project"
